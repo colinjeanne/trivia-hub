@@ -1,0 +1,23 @@
+{
+  "name": "trivia-hub",
+  "version": "1.0.0",
+  "description": "A simple recreation of HQ Trivia",
+  "main": "index.js",
+  "repository": "https://github.com/colinjeanne/trivia-hub",
+  "author": "Colin Jeanne <colinjeanne@hotmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "lint": "eslint web/*.js worker/*.js --fix"
+  },
+  "workspaces": [
+    "web",
+    "worker"
+  ],
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^2.0.4"
+  }
+}

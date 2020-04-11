@@ -1,0 +1,17 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "The TriviaHub web frontend",
+  "main": "index.js",
+  "repository": "https://github.com/colinjeanne/trivia-hub",
+  "author": "Colin Jeanne <colinjeanne@hotmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "bee-queue": "^1.2.3",
+    "bufferutil": "^4.0.1",
+    "express": "^4.17.1",
+    "utf-8-validate": "^5.0.2",
+    "ws": "^7.2.3"
+  }
+}
