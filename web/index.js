@@ -1,20 +1,16 @@
 const Queue = require("bee-queue");
-const express = require("express");
 const { Server } = require("ws");
 
 const PORT = process.env.PORT || 3000;
 const REDIS_URL = process.env.REDIS_URL;
 
-const httpServer = express();
 const workQueue = new Queue("trivia-queue", {
   isWorker: false,
   redis: REDIS_URL,
   removeOnFailure: true,
   removeOnSuccess: true,
 });
-const socketServer = new Server({ server: httpServer });
-
-httpServer.get("/", (req, res) => res.send("OK"));
+const socketServer = new Server({ port: PORT });
 
 socketServer.on("connection", (ws) => {
   console.log("Client connected");
@@ -23,8 +19,4 @@ socketServer.on("connection", (ws) => {
   ws.on("message", (data) => console.log(`Got data ${data}`));
 });
 
-workQueue
-  .ready()
-  .then(() =>
-    httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`))
-  );
+workQueue.ready().then(() => console.log("Started"));
