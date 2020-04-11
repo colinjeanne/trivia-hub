@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  redis:
+    expose:
+      - 6379
+    image: redis:latest
+  web:
+    build: ./web
+    depends_on:
+      - redis
+    environment:
+      PORT: 3000
+      REDIS_URL: redis://redis:6379
+    ports:
+      - 3000:3000

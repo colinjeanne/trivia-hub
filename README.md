@@ -16,10 +16,10 @@ Users have two options to play. User can either choose to play in a global game 
 
 This project separates the frontend from the backend. This separation makes sense for several reasons including
 
-* Static frontend assests can be distributed by CDNs making the page feel more responsive to users
-* Frontends and backends have very different concerns and behaviors. Backends can often think about each request separately from every other requests while frontends need to keep track of and manage long-running state across many requests
-* Frontends and backends are often built with very different technologies
-* Frontends and backends are often maintained by different engineers
+- Static frontend assests can be distributed by CDNs making the page feel more responsive to users
+- Frontends and backends have very different concerns and behaviors. Backends can often think about each request separately from every other requests while frontends need to keep track of and manage long-running state across many requests
+- Frontends and backends are often built with very different technologies
+- Frontends and backends are often maintained by different engineers
 
 ## Frontend Design
 
@@ -39,22 +39,22 @@ In the interests of time I've chosen to deploy the backend with Heroku because i
 
 # Design Process
 
-To start this task I first tried to understand what HQ Trivia was. The [Wikipedia](https://en.wikipedia.org/wiki/HQ_\(game\)) page wasn't as descriptive as I had hoped and so I looked up gameplay on YouTube [and was not disappointed](https://www.youtube.com/watch?v=in-Px_sOQdE).
+To start this task I first tried to understand what HQ Trivia was. The [Wikipedia](<https://en.wikipedia.org/wiki/HQ_(game)>) page wasn't as descriptive as I had hoped and so I looked up gameplay on YouTube [and was not disappointed](https://www.youtube.com/watch?v=in-Px_sOQdE).
 
 Stripping out the flash of the application it appears that there are a few fundamental pieces
 
-* A game lobby where users wait for the next game to begin
-* A series of questions given to the users one at a time
-* A countdown for the user to choose the correct answer
-* A statistics screen shown for some period of time after the countdown expires showing how many users answered each question
-* A small HUD showing a number of users (it's not clear from the video what the count is but I suspect is the number of users watching or participating)
+- A game lobby where users wait for the next game to begin
+- A series of questions given to the users one at a time
+- A countdown for the user to choose the correct answer
+- A statistics screen shown for some period of time after the countdown expires showing how many users answered each question
+- A small HUD showing a number of users (it's not clear from the video what the count is but I suspect is the number of users watching or participating)
 
 The data this application needs for a single round is
 
-* The current number of participating users some of which are still in the game and some of which are spectators
-* An ordered set of multiple choice questions and answers
-* The answer selections for each non-spectating user for the current question
-* The current time left to answer the current question
+- The current number of participating users some of which are still in the game and some of which are spectators
+- An ordered set of multiple choice questions and answers
+- The answer selections for each non-spectating user for the current question
+- The current time left to answer the current question
 
 Persistent user information isn't necessary to get this application started. All users need is a name and some way of participating in a game.
 
@@ -80,5 +80,5 @@ From here I had a skeleton of an idea
 
 From here there are a few things to work out
 
-* How will time synchronization actually work? How long will websocket responses take to get to the client and so how much drift can I expect?
-* How will I implement two services on the backend in a relatively short amount of time to get the pub/sub behavior?
+- How will time synchronization actually work? How long will websocket responses take to get to the client and so how much drift can I expect?
+- How will I implement two services on the backend in a relatively short amount of time to get the pub/sub behavior?
