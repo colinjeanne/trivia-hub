@@ -13,3 +13,9 @@ services:
       REDIS_URL: redis://redis:6379
     ports:
       - 3000:3000
+  worker:
+    build: ./worker
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379
