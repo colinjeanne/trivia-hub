@@ -2,9 +2,99 @@
 <html>
     <head>
         <title>Trivia Hub</title>
-        <meta content="utf-8" />
+        <meta charset="utf-8">
+        <script>
+            const socket = new WebSocket("wss://nameless-waters-54140.herokuapp.com/");
+            socket.addEventListener(
+                "open",
+                () => {
+                    console.log("Connected to server");
+                    document.getElementById("button").disabled = false;
+                    socket.send(JSON.stringify({ type: "setName", name: "David" }));
+                });
+            socket.addEventListener(
+                "message",
+                event => {
+                    console.log("Message from server ", event.data);
+                    handleGameMessage(JSON.parse(event.data));
+                }
+            );
+
+            function tryGame() {
+                socket.send(JSON.stringify({ type: "join" }));
+                gameEl.hidden = false;
+                activeEl.textContent = "True";
+            }
+        </script>
     </head>
     <body>
-        <h1>Hello world</h1>
+        <button id="button" disabled="true">Start Game</button>
+        <div id="game" hidden="true">
+            <div>Active: <span id="active"></span></div>
+            <div>Timer: <span id="timer"></span></div>
+            <p id="question"></p>
+            <ol>
+                <li id="a1"></li>
+                <li id="a2"></li>
+                <li id="a3"></li>
+            </ol>
+        </div>
+        <script>
+            document.getElementById("button").addEventListener("click", tryGame);
+
+            const gameEl = document.getElementById("game");
+            const activeEl = document.getElementById("active");
+            const timerEl = document.getElementById("timer");
+            const questionEl = document.getElementById("question");
+            const a1El = document.getElementById("a1");
+            const a2El = document.getElementById("a2");
+            const a3El = document.getElementById("a3");
+
+            let timeLeft = null;
+
+            a1El.addEventListener("click", () => {
+                socket.send(JSON.stringify({ type: "answer", answerIndex: 0 }));
+            });
+
+            a2El.addEventListener("click", () => {
+                socket.send(JSON.stringify({ type: "answer", answerIndex: 1 }));
+            });
+
+            a3El.addEventListener("click", () => {
+                socket.send(JSON.stringify({ type: "answer", answerIndex: 2 }));
+            });
+
+            let timerId = null;
+            function updateTimer() {
+                timeLeft -= 100;
+
+                timerEl.textContent = (timeLeft / 1000).toFixed(1);
+            }
+
+            function handleGameMessage(data) {
+                if (data.type === "question") {
+                    questionEl.textContent = data.question;
+                    a1.textContent = data.answers[0];
+                    a2.textContent = data.answers[1];
+                    a3.textContent = data.answers[2];
+                    timeLeft = null;
+                } else if (data.type === "countDown") {
+                    if (timeLeft === null) {
+                        timerId = setInterval(updateTimer, 100);
+                    } else if (data.timeLeft === 0) {
+                        clearInterval(timerId);
+                    }
+
+                    timeLeft = data.timeLeft;
+                } else if (data.type === "results") {
+                    timeLeft = null;
+                    if (data.eliminated) {
+                        activeEl.textContent = "False";
+                    }
+                } else if (data.type === "end") {
+                    //
+                }
+            }
+        </script>
     </body>
 </html>
