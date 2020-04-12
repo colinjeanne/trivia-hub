@@ -1,30 +1,37 @@
 const Queue = require("bee-queue");
+const redis = require("redis");
+const { processGame } = require("./game.js");
+const { fetchQuestions } = require("./questions.js");
 
 const REDIS_URL = process.env.REDIS_URL;
 const MAX_GAMES_PER_JOB = 10;
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function runGame(job) {
-  console.log(`Starting game: ${job.id}`);
-
-  let timeLeft = 10000;
-
-  while (timeLeft > 0) {
-    job.reportProgress({ timeLeft });
-    timeLeft -= 100;
-    await sleep(100);
-  }
-
-  console.log(`Ending game: ${job.id}`);
-}
+const redisClient = redis.createClient(REDIS_URL);
 
 const workQueue = new Queue("trivia-queue", {
   getEvents: false,
-  redis: REDIS_URL,
+  redis: redisClient,
   removeOnFailure: true,
   removeOnSuccess: true,
   sendEvents: true,
 });
+
+async function runGame(job) {
+  try {
+    const gameId = job.id;
+    const players = job.data;
+
+    const questions = fetchQuestions();
+    await processGame(
+      gameId,
+      players,
+      redisClient,
+      questions,
+      job.reportProgress.bind(job)
+    );
+  } catch (e) {
+    console.error(`Unhandled exception ${e.message}`);
+  }
+}
 
 workQueue.ready().then(() => workQueue.process(MAX_GAMES_PER_JOB, runGame));
