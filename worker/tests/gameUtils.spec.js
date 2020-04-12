@@ -4,9 +4,12 @@ const {
   getPlayerAnswers,
   insertRandomlyInto,
 } = require("../src/gameUtils.js");
+const { StubRedisClient } = require("./stubRedisClient.js");
 
 describe("countDown", () => {
-  jest.spyOn(global, "setTimeout");
+  beforeEach(() => {
+    jest.spyOn(global, "setTimeout").mockImplementation((cb) => cb());
+  });
 
   test("counts down with a step", async () => {
     const cb = jest.fn();
@@ -47,20 +50,6 @@ describe("getAnswerCounts", () => {
 });
 
 describe("getPlayerAnswers", () => {
-  class StubRedisClient {
-    constructor(data) {
-      this.data = data;
-    }
-
-    hgetall(key, cb) {
-      if (key in this.data) {
-        return cb(undefined, this.data[key]);
-      }
-
-      return [];
-    }
-  }
-
   test("gets all player answers", async () => {
     const redisClient = new StubRedisClient({
       "1:0": ["1", "0", "2", "0", "3", "1"],
