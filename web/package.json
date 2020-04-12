@@ -2,7 +2,7 @@
   "name": "web",
   "version": "1.0.0",
   "description": "The TriviaHub web frontend",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": "https://github.com/colinjeanne/trivia-hub",
   "author": "Colin Jeanne <colinjeanne@hotmail.com>",
   "license": "MIT",

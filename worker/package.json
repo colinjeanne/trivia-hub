@@ -2,7 +2,7 @@
   "name": "worker",
   "version": "1.0.0",
   "description": "The TriviaHub worker",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": "https://github.com/colinjeanne/trivia-hub",
   "author": "Colin Jeanne <colinjeanne@hotmail.com>",
   "license": "MIT",
