@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "bee-queue": "^1.2.3"
+    "bee-queue": "^1.2.3",
+    "redis": "^2.7.1"
   }
 }
