@@ -33,7 +33,11 @@ async function getPlayerAnswers(redisClient, gameId, round) {
   const hgetall = promisify(redisClient.hgetall.bind(redisClient));
 
   const key = `${gameId}:${round}`;
-  const answers = await hgetall(key);
+  let answers = await hgetall(key);
+  if (!answers) {
+    answers = [];
+  }
+
   const playerAnswers = {};
   for (let index = 0; index < answers.length; index += 2) {
     playerAnswers[answers[index]] = parseInt(answers[index + 1], 10);
