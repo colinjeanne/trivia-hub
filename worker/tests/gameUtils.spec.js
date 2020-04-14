@@ -59,7 +59,7 @@ describe("getPlayerAnswers", () => {
   });
 
   test("returns an empty answer object when no answers are given", async () => {
-    const redisClient = new StubRedisClient({ "1:0": [] });
+    const redisClient = new StubRedisClient({ "1:0": null });
     const answers = await getPlayerAnswers(redisClient, "1", 0);
     expect(answers).toEqual({});
   });
