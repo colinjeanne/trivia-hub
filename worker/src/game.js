@@ -61,7 +61,7 @@ async function processGame(
   console.log(`Starting game gameId="${gameId}"`);
 
   const channel = new Channel(channelCallback);
-  const gameTimer = makeCountDown(10000, 250, channel);
+  const gameTimer = makeCountDown(10000, 1000, channel);
   const playerState = new PlayerState(players);
 
   const curryRound = (round, question) =>
