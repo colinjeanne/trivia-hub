@@ -75,6 +75,10 @@ async function processGame(
       gameTimer
     );
 
+  channel.startGame(players, gameId);
+
+  await gameTimer();
+
   for (let round = 0; round < questions.length; ++round) {
     const question = questions[round];
     const hasActivePlayers = await curryRound(round, question);

@@ -3,6 +3,14 @@ class Channel {
     this.channelCallback = channelCallback;
   }
 
+  startGame(players, gameId) {
+    this.channelCallback({
+      type: "start",
+      players,
+      gameId,
+    });
+  }
+
   poseQuestion(question, answers, round) {
     this.channelCallback({
       type: "question",
