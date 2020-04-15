@@ -1,6 +1,37 @@
 const { Channel } = require("../src/channel.js");
 
 describe("Channel", () => {
+  test("startGame reports the players and the gameId to the channel", () => {
+    const cb = jest.fn();
+    const channel = new Channel(cb);
+
+    const players = [
+      {
+        id: "p1",
+        name: "Washington",
+      },
+      {
+        id: "p2",
+        name: "Irving",
+      },
+      {
+        id: "p3",
+        name: "John",
+      },
+    ];
+
+    channel.startGame(players, "A");
+    expect(cb.mock.calls).toEqual([
+      [
+        {
+          type: "start",
+          players,
+          gameId: "A",
+        },
+      ],
+    ]);
+  });
+
   test("postQuestion posts a question to the channel", () => {
     const cb = jest.fn();
     const channel = new Channel(cb);

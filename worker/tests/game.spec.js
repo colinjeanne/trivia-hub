@@ -47,6 +47,24 @@ describe("processGame", () => {
     channelCallback = jest.fn();
   });
 
+  test("notifies players when the game starts", async () => {
+    const redisClient = new StubRedisClient({
+      "1:0": null,
+    });
+
+    await processGame(1, players, redisClient, questions, channelCallback);
+
+    expect(channelCallback).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ type: "start" })
+    );
+    const startNotifications = channelCallback.mock.calls
+      .map((call) => call[0])
+      .filter((call) => call.type === "start").length;
+
+    expect(startNotifications).toBe(1);
+  });
+
   test("has one round per question", async () => {
     const redisClient = new StubRedisClient({
       "1:0": { p1: "0", p2: "0", p3: "0" },
