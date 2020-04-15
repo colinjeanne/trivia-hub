@@ -37,7 +37,7 @@ function fetchQuestions() {
     },
     {
       question:
-        "What got of love is often depicted as a chubby winged infant with a bow and arrow?",
+        "What god of love is often depicted as a chubby winged infant with a bow and arrow?",
       answer: "Cupid",
       diversions: ["Mercury", "Poseidon"],
     },
