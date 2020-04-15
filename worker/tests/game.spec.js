@@ -49,9 +49,9 @@ describe("processGame", () => {
 
   test("has one round per question", async () => {
     const redisClient = new StubRedisClient({
-      "1:0": ["p1", "0", "p2", "0", "p3", "0"],
-      "1:1": ["p1", "0", "p2", "1", "p3", "0"],
-      "1:2": ["p1", "0", "p3", "1"],
+      "1:0": { p1: "0", p2: "0", p3: "0" },
+      "1:1": { p1: "0", p2: "1", p3: "0" },
+      "1:2": { p1: "0", p3: "1" },
     });
 
     await processGame(1, players, redisClient, questions, channelCallback);
@@ -65,9 +65,9 @@ describe("processGame", () => {
 
   test("ends the game early if there are no active players", async () => {
     const redisClient = new StubRedisClient({
-      "1:0": ["p1", "0", "p2", "0", "p3", "0"],
-      "1:1": ["p1", "1", "p2", "1", "p3", "1"],
-      "1:2": ["p1", "0", "p3", "1"],
+      "1:0": { p1: "0", p2: "0", p3: "0" },
+      "1:1": { p1: "1", p2: "1", p3: "1" },
+      "1:2": { p1: "0", p3: "1" },
     });
 
     await processGame(1, players, redisClient, questions, channelCallback);
@@ -85,9 +85,9 @@ describe("processGame", () => {
 
   test("reports winning player names and IDs", async () => {
     const redisClient = new StubRedisClient({
-      "1:0": ["p1", "0", "p2", "0", "p3", "0"],
-      "1:1": ["p1", "0", "p2", "1", "p3", "1"],
-      "1:2": ["p1", "0", "p3", "1"],
+      "1:0": { p1: "0", p2: "0", p3: "0" },
+      "1:1": { p1: "0", p2: "1", p3: "1" },
+      "1:2": { p1: "0", p3: "1" },
     });
 
     await processGame(1, players, redisClient, questions, channelCallback);
@@ -135,7 +135,7 @@ describe("processRound", () => {
 
   test("reports state to the channel", async () => {
     const redisClient = new StubRedisClient({
-      "1:0": ["p1", "0", "p2", "0", "p3", "0"],
+      "1:0": { p1: "0", p2: "0", p3: "0" },
     });
 
     const playerState = new PlayerState([
@@ -190,7 +190,7 @@ describe("processRound", () => {
 
   test("eliminates players who answer incorrectly", async () => {
     const redisClient = new StubRedisClient({
-      "1:0": ["p1", "0", "p2", "1", "p3", "0"],
+      "1:0": { p1: "0", p2: "1", p3: "0" },
     });
 
     const playerState = new PlayerState([

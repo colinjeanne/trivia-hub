@@ -52,10 +52,10 @@ describe("getAnswerCounts", () => {
 describe("getPlayerAnswers", () => {
   test("gets all player answers", async () => {
     const redisClient = new StubRedisClient({
-      "1:0": ["1", "0", "2", "0", "3", "1"],
+      "1:0": { p1: "0", p2: "0", p3: "1" },
     });
     const answers = await getPlayerAnswers(redisClient, "1", 0);
-    expect(answers).toEqual({ "1": 0, "2": 0, "3": 1 });
+    expect(answers).toEqual({ p1: 0, p2: 0, p3: 1 });
   });
 
   test("returns an empty answer object when no answers are given", async () => {
