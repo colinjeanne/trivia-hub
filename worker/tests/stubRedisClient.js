@@ -1,14 +1,10 @@
 class StubRedisClient {
-  constructor(data) {
+  constructor(data = {}) {
     this.data = data;
   }
 
   hgetall(key, cb) {
-    if (key in this.data) {
-      return cb(undefined, this.data[key]);
-    }
-
-    return [];
+    return cb(undefined, this.data[key] || null);
   }
 }
 
