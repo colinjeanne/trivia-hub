@@ -4,7 +4,7 @@ class StubRedisClient {
   }
 
   hgetall(key, cb) {
-    return cb(undefined, this.data[key] || null);
+    cb(undefined, this.data[key] || null);
   }
 }
 
