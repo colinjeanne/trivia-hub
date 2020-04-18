@@ -3,32 +3,13 @@
     <head>
         <title>Trivia Hub</title>
         <meta charset="utf-8">
+        <script src="./js/dataChannel.js"></script>
         <script>
-            const socket = new WebSocket("wss://nameless-waters-54140.herokuapp.com/");
-            socket.addEventListener(
-                "open",
-                () => {
-                    console.log("Connected to server");
-                    document.getElementById("button").disabled = false;
-                    socket.send(JSON.stringify({ type: "setName", name: "David" }));
-                });
-            socket.addEventListener(
-                "message",
-                event => {
-                    console.log("Message from server ", event.data);
-                    handleGameMessage(JSON.parse(event.data));
-                }
-            );
-
-            function tryGame() {
-                socket.send(JSON.stringify({ type: "join" }));
-                gameEl.hidden = false;
-                activeEl.textContent = "True";
-            }
+            const SERVER_URL = "wss://nameless-waters-54140.herokuapp.com/";
         </script>
     </head>
     <body>
-        <button id="button" disabled="true">Start Game</button>
+        <button id="button">Start Game</button>
         <div id="game" hidden="true">
             <div>Active: <span id="active"></span></div>
             <div>Timer: <span id="timer"></span></div>
@@ -67,33 +48,52 @@
             let timerId = null;
             function updateTimer() {
                 timeLeft -= 100;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    clearInterval(timerId);
+                    timerId = null;
+                }
 
                 timerEl.textContent = (timeLeft / 1000).toFixed(1);
             }
 
-            function handleGameMessage(data) {
-                if (data.type === "question") {
-                    questionEl.textContent = data.question;
-                    a1.textContent = data.answers[0];
-                    a2.textContent = data.answers[1];
-                    a3.textContent = data.answers[2];
+            function tryGame() {
+                const dataChannel = new DataChannel(SERVER_URL, "Washington");
+                dataChannel.addEventListener("connected", () => {
+                    console.log("Connected!");
+                    dataChannel.joinGame();
+                });
+                dataChannel.addEventListener("error", () => cosole.log("ERROR"));
+
+                dataChannel.addEventListener("start", () => {});
+                dataChannel.addEventListener("question", (event) => {
+                    questionEl.textContent = event.question;
+                    a1.textContent = event.answers[0];
+                    a2.textContent = event.answers[1];
+                    a3.textContent = event.answers[2];
                     timeLeft = null;
-                } else if (data.type === "countDown") {
+                });
+                dataChannel.addEventListener("countDown", (event) => {
                     if (timeLeft === null) {
                         timerId = setInterval(updateTimer, 100);
-                    } else if (data.timeLeft === 0) {
+                    } else if (event.timeLeft === 0) {
                         clearInterval(timerId);
                     }
 
-                    timeLeft = data.timeLeft;
-                } else if (data.type === "results") {
+                    timeLeft = event.timeLeft;
+                });
+                dataChannel.addEventListener("results", (event) => {
                     timeLeft = null;
-                    if (data.eliminated) {
+                    if (event.eliminated) {
                         activeEl.textContent = "False";
                     }
-                } else if (data.type === "end") {
-                    //
-                }
+                });
+                dataChannel.addEventListener("end", (event) => {
+                    console.log("Game end");
+                });
+                dataChannel.connect();
+                gameEl.hidden = false;
+                activeEl.textContent = "True";
             }
         </script>
     </body>
