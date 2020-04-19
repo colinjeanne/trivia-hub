@@ -82,6 +82,15 @@ class DataChannel extends EventTarget {
 
     sendData({ type: "join" }, this.socket);
   }
+
+  answer(answerIndex) {
+    if (this.readyState !== WebSocket.OPEN) {
+      emitError("Not connected", this);
+      return;
+    }
+
+    sendData({ type: "answer", answerIndex }, this.socket);
+  }
 }
 
 // Make this work in both browser and Node environments
