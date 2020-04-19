@@ -136,4 +136,28 @@ describe("DataChannel", () => {
       });
     });
   });
+
+  describe("answer", () => {
+    test("emits an error if not connected", () => {
+      const dataChannel = new DataChannel("", "Washington");
+
+      dataChannel.addEventListener("error", (event) => {
+        expect(event.message).toEqual("Not connected");
+      });
+
+      dataChannel.answer(0);
+    });
+
+    test("send an answer message if connected", () => {
+      const dataChannel = new DataChannel("", "Washington");
+      dataChannel.connect();
+      dataChannel.joinGame();
+      dataChannel.answer(0);
+
+      expect(dataChannel.socket.sendCallback).toHaveBeenCalledWith({
+        type: "answer",
+        answerIndex: 0,
+      });
+    });
+  });
 });
