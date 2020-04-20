@@ -41,28 +41,36 @@ function CountDown(props) {
   return e(
     "div",
     { className: "count-down-timer" },
-    e("span", null, props.title),
-    e("span", { id: "count-down-timer" }, secondsLeft.toFixed(1))
+    e("div", null, props.title),
+    e("div", { id: "count-down-timer" }, secondsLeft.toFixed(1))
   );
 }
 
 function EnterNamePage(props) {
   const [name, setName] = React.useState("");
+  const inputRef = React.useRef(null);
 
   return e(
     "div",
-    null,
-    e("div", null, "Welcome to TriviaHub"),
+    { className: "enter-page" },
+    e("input", {
+      onChange: (event) => setName(event.currentTarget.value),
+      maxLength: 40,
+      minLength: 3,
+      pattern: "^[A-Za-z0-9_ ]{3,40}$",
+      placeholder: "What's your name?",
+      ref: inputRef,
+      value: name,
+    }),
     e(
-      "label",
-      null,
-      "What's your name?",
-      e("input", {
-        onChange: (event) => setName(event.currentTarget.value),
-        value: name,
-      })
-    ),
-    e("button", { onClick: () => props.chooseName(name) }, "Enter")
+      "button",
+      {
+        disabled: !inputRef.current || !inputRef.current.validity.valid,
+        onClick: (event) =>
+          event.currentTarget.validity.valid && props.chooseName(name),
+      },
+      "Enter"
+    )
   );
 }
 
@@ -71,11 +79,23 @@ function ConnectingPage() {
 }
 
 function JoinGamePage(props) {
-  return e("button", { onClick: () => props.onJoin() }, "Join a game!");
+  return e(
+    "button",
+    {
+      className: "join-game-button",
+      onClick: () => props.onJoin(),
+    },
+    "Join a game!"
+  );
 }
 
 function WaitingAreaPage() {
-  return e("div", null, e("div", null, "Waiting for a new game..."), e(Ripple));
+  return e(
+    "div",
+    { className: "waiting-area" },
+    e("div", null, "Waiting for a new game..."),
+    e(Ripple)
+  );
 }
 
 function StartingGamePage(props) {
@@ -90,20 +110,31 @@ function StartingGamePage(props) {
 }
 
 function QuestionPage(props) {
+  const [chosenIndex, setChosenIndex] = React.useState(null);
+
   const answers = props.questionData.answers.map((answer, answerIndex) =>
     e(
       "li",
       {
-        disabled: props.eliminated,
         key: answer,
-        onClick: () => props.onAnswer(answerIndex),
       },
-      answer
+      e(
+        "button",
+        {
+          className: answerIndex === chosenIndex ? "chosen-answer" : undefined,
+          disabled: props.eliminated,
+          onClick: () => {
+            setChosenIndex(answerIndex);
+            props.onAnswer(answerIndex);
+          },
+        },
+        answer
+      )
     )
   );
   return e(
     "div",
-    null,
+    { className: "question-page" },
     e("div", { className: "question" }, props.questionData.question),
     e(CountDown, { timeLeft: props.timeLeft, title: "Time left" }),
     e("ol", { className: "answers" }, answers)
@@ -111,19 +142,28 @@ function QuestionPage(props) {
 }
 
 function ResultsPage(props) {
-  const answers = props.questionData.answers.map((answer) =>
+  const answers = props.questionData.answers.map((answer, index) =>
     e(
       "li",
       {
-        disabled: props.eliminated,
         key: answer,
       },
-      answer
+      e(
+        "div",
+        {
+          className:
+            index === props.resultsData.correctAnswerIndex
+              ? "results-answer correct-answer"
+              : "results-answer",
+        },
+        e("span", null, answer),
+        e("span", null, props.resultsData.answerCounts[index])
+      )
     )
   );
   return e(
     "div",
-    null,
+    { className: "results-page" },
     e("div", { className: "question" }, props.questionData.question),
     e(CountDown, { timeLeft: props.timeLeft, title: "Next round" }),
     e("ol", { className: "answers" }, answers)
@@ -131,10 +171,32 @@ function ResultsPage(props) {
 }
 
 function WinnersPage(props) {
-  const winners = props.winners.map((winner, winnerIndex) =>
-    e("li", { key: `${winner}-${winnerIndex}` }, winner)
+  const winners = props.winners.map((winner) =>
+    e("li", { key: winner.id }, winner.name)
   );
-  return e("ul", null, winners);
+
+  const playAgain = e("button", { onClick: props.onPlayAgain }, "Play again!");
+
+  if (winners.length === 0) {
+    return e(
+      "div",
+      { className: "winners" },
+      e(
+        "div",
+        null,
+        "No one was able to answer all questions. Better luck next time!"
+      ),
+      playAgain
+    );
+  }
+
+  return e(
+    "div",
+    { className: "winners" },
+    e("div", null, "Congratulations to our winners!"),
+    e("ul", { className: "winners" }, winners),
+    playAgain
+  );
 }
 
 function ErrorPage(props) {
@@ -146,13 +208,26 @@ function ErrorPage(props) {
   );
 }
 
+function PlayerCount(props) {
+  if (!props.answerCounts) {
+    return null;
+  }
+
+  const playerCount = Object.values(props.answerCounts).reduce(
+    (sum, count) => sum + count,
+    0
+  );
+  return e("div", { className: "player-count" }, `👤 ${playerCount}`);
+}
+
 // This is expected to be in the global scope
 // eslint-disable-next-line no-unused-vars
 function App(props) {
   const [page, setPage] = React.useState(Pages.ENTER_NAME);
   const [dataChannel, setDataChannel] = React.useState(null);
   const [timeLeft, setTimeLeft] = React.useState(null);
-  const [questionData, setQuestionData] = React.useState(null);
+  const [questionData, setQuestionData] = React.useState({});
+  const [resultsData, setResultsData] = React.useState({});
   const [eliminated, setEliminated] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [winners, setWinners] = React.useState([]);
@@ -190,6 +265,10 @@ function App(props) {
       if (event.eliminated) {
         setEliminated(event.eliminated);
       }
+      setResultsData({
+        correctAnswerIndex: event.correctAnswerIndex,
+        answerCounts: event.answerCounts,
+      });
       setTimeLeft(null);
       setPage(Pages.RESULTS);
     });
@@ -214,30 +293,45 @@ function App(props) {
     dataChannel.answer(answerIndex);
   }
 
+  let pageSection;
   if (page === Pages.ENTER_NAME) {
-    return e(EnterNamePage, { chooseName: handleChooseName });
+    pageSection = e(EnterNamePage, { chooseName: handleChooseName });
   } else if (page === Pages.CONNECTING) {
-    return e(ConnectingPage);
+    pageSection = e(ConnectingPage);
   } else if (page === Pages.JOIN_GAME) {
-    return e(JoinGamePage, { onJoin: handleJoinGame });
+    pageSection = e(JoinGamePage, { onJoin: handleJoinGame });
   } else if (page === Pages.WAITING_AREA) {
-    return e(WaitingAreaPage);
+    pageSection = e(WaitingAreaPage);
   } else if (page === Pages.STARTING_GAME) {
-    return e(StartingGamePage, { timeLeft });
+    pageSection = e(StartingGamePage, { timeLeft });
   } else if (page === Pages.QUESTION) {
-    return e(QuestionPage, {
+    pageSection = e(QuestionPage, {
       eliminated,
       onAnswer: handleAnswer,
       questionData,
       timeLeft,
     });
   } else if (page === Pages.RESULTS) {
-    return e(ResultsPage, { questionData, timeLeft });
+    pageSection = e(ResultsPage, { questionData, resultsData, timeLeft });
   } else if (page === Pages.WINNERS) {
-    return e(WinnersPage, { winners });
+    pageSection = e(WinnersPage, {
+      onPlayAgain: () => {
+        setQuestionData({});
+        setResultsData({});
+        setPage(Pages.JOIN_GAME);
+      },
+      winners,
+    });
   } else if (page === Pages.ERROR) {
-    return e(ErrorPage, { message: errorMessage });
+    pageSection = e(ErrorPage, { message: errorMessage });
+  } else {
+    pageSection = e(ErrorPage, { message: "Unknown error" });
   }
 
-  return e(ErrorPage, { message: "Unknown error" });
+  return e(
+    React.Fragment,
+    null,
+    e(PlayerCount, { answerCounts: resultsData.answerCounts }),
+    pageSection
+  );
 }
