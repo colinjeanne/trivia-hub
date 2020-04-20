@@ -64,6 +64,8 @@ The countdown is one of the more interesting aspects of the game because it's sh
 
 To start, I googled. I came across [a page by StackOverflow](https://stackoverflow.blog/2019/12/18/websockets-for-fun-and-profit/) which gave me an overview and made me more confident that they were a good fit for the problem and [a page on Hackernoon](https://hackernoon.com/scaling-websockets-9a31497af051) about scaling websocket applications. I also remembered [this Reddit blog post](https://redditblog.com/2017/04/13/how-we-built-rplace/) an April Fool's game that had tens of thousands of users connected using websockets. It didn't offer too much new information but it did confirm that they were pairing websockets with a pub/sub service as the Hackernoon article suggested.
 
+## Initial Design
+
 From here I had a skeleton of an idea
 
 1. Each round is represented by a single websocket connection
@@ -82,3 +84,19 @@ From here there are a few things to work out
 
 - How will time synchronization actually work? How long will websocket responses take to get to the client and so how much drift can I expect?
 - How will I implement two services on the backend in a relatively short amount of time to get the pub/sub behavior?
+
+## Later Process Thoughts
+
+Once I starting thinking more about the implementation and more about how web sockets worked I realized that my stretch of allowing games with friends actually creates a huge scaling difficulty. Each web frontend would need to know about every game their users are playing and so would need to process messages for an arbitrary number of games - many of which might be irrelevant to any player connected to that web frontend. Without this feature we could feasibly expect a few games going at once depending on the minimum number of users per game. This reduces the amount of unnecessary work on the web frontends.
+
+## Productionalizing
+
+Since this is a proof of concept there is a fair amount of work that would be necessary before putting this project in a production environment. In no particular order
+
+* The web, worker, and client aspects of this project should be split into different repositories with their own deployment strategies. I have worked to ensure there is as little shared logic between them as possible to simulate this.
+* The client should be moved out of GitHub Pages and gain a proper build system. It is not using JSX or TypeScript largely because of time pressure and because I didn't want to maintain a separate build system in a different branch from master. In general, I find the practice of maintaining a separate `gh-pages` branch for GitHub Pages to be pretty difficult to work with (not that GitHub Pages would be a great use of any production client).
+* Improve error handling. I have very little error handling logic and make no attempt to recover even if the errors could be recoverable.
+* Switch to using real user accounts. Right now all users are ephemeral which means disconnections or other websocket errors are difficult to recover from and which means the list of pending users can become full of disconnected users. This could lead to a DoS attack in which many websockets are connected, join a game, and disconnect in order to overwhelm the worker with games of disconnected users.
+* Improve logging. The logs in this service are rudimentary. I've placed important information in a structured form but the message itself should also be in a structured field. A library like Winston can help with this. Logs should also flow to a suitable collection service like SumoLogic or an internal log collection and analytis platform.
+* Add frontend tests. The frontend has little to no tests due to time pressure and because frontend testing is more difficult. Ideally a tool like Storyboard would be set up to facilitate the development and manual testing of React components as well.
+* Hook up CI/CD. This project does run tests when branches are pushed or changes are checked in to master but great systems automate deployment as well.
