@@ -37,7 +37,10 @@ const pingInterval = setInterval(() => {
   });
 }, 10000);
 
-const MINIMUM_PLAYERS_PER_GAME = process.env.MINIMUM_PLAYERS_PER_GAME || 1;
+const MINIMUM_PLAYERS_PER_GAME = parseInt(
+  process.env.MINIMUM_PLAYERS_PER_GAME || "1",
+  10
+);
 
 async function joinGame(player) {
   const playerCount = await redisDataStore.addPlayerToWaitingArea(player);
