@@ -1,10 +1,180 @@
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+
+  height: 100%;
+
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  background: rgb(58,193,255);
+  background: linear-gradient(90deg, rgba(58,193,255,1) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,1) 75%, rgba(58,193,255,1) 100%);
+}
+
+h1 {
+  text-align: center;
+}
+
+button {
+  font-size: 200%;
+
+  border-radius: 5px;
+  background-color: rgba(58, 193, 255, 0.25);
+}
+
+button:hover {
+  background-color: rgba(58, 193, 255, 0.5);
+}
+
+.h-centering {
+  position: relative;
+
+  flex-grow: 1;
+
+  display: flex;
+  justify-content: center;
+}
+
+.v-centering {
+  height: 100%;
+  width: 50%;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#container {
+  display: flex;
+  justify-content: center;
+}
+
+.enter-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.enter-page input {
+  font-size: 200%;
+
+  text-align: center;
+
+  border-radius: 5px 5px 0 0;
+  border-bottom-width: 0;
+}
+
+.enter-page button {
+  border-radius: 0 0 5px 5px;
+  border-top-width: 0;
+}
+
+.waiting-area {
+  font-size: 200%;
+  text-align: center;
+}
+
+.count-down-timer {
+  padding: 2em 0 2em 0;
+  text-align: center;
+}
+
+.count-down-timer :first-child {
+  font-size: 125%;
+}
+
+.count-down-timer :last-child {
+  font-size: 300%;
+}
+
+.question {
+  font-size: 150%;
+  text-align: center;
+}
+
+.answers {
+  list-style: none;
+  padding: 0;
+}
+
+.answers li {
+  margin-top: 1em;
+}
+
+.answers button {
+  width: 100%;
+}
+
+.chosen-answer {
+  background-color: rgba(58, 255, 120, 0.75);
+}
+
+.chosen-answer:hover {
+  background-color: rgb(58, 255, 120);
+}
+
+.correct-answer {
+  background-color: rgba(58, 255, 120, 0.75);
+}
+
+.results-answer {
+  font-size: 200%;
+
+  border-radius: 5px;
+  padding: 8px;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.results-answer :first-child {
+  margin-right: 16px;
+}
+
+.winners div {
+  font-size: 200%;
+  margin-bottom: 16px;
+}
+
+.winners ul {
+  list-style: none;
+  padding: 0;
+}
+
+.winners li {
+  margin-top: 1em;
+  font-size: 150%;
+}
+
+.winners button {
+  width: 100%;
+}
+
+.player-count {
+  position: absolute;
+
+  font-size: 150%;
+  top: 1em;
+  left: 1em;
+
+  opacity: 50%;
+}
+
 /* From loading.io/css */
 
 .lds-ripple {
   display: inline-block;
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 320px;
+  height: 320px;
 }
 .lds-ripple div {
   position: absolute;
@@ -18,8 +188,8 @@
 }
 @keyframes lds-ripple {
   0% {
-    top: 36px;
-    left: 36px;
+    top: 144px;
+    left: 144px;
     width: 0;
     height: 0;
     opacity: 1;
@@ -27,8 +197,8 @@
   100% {
     top: 0px;
     left: 0px;
-    width: 72px;
-    height: 72px;
+    width: 288px;
+    height: 288px;
     opacity: 0;
   }
 }
